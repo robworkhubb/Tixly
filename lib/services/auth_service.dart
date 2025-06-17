@@ -18,6 +18,7 @@ class AuthService {
     required String password,
     required String displayName,
   }) async {
+    print('[DEBUG] signUp with displayname: $displayName');
     final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -26,10 +27,11 @@ class AuthService {
     final user = userCredential.user;
 
     if (user != null) {
+      print('[DEBUG] signUp with displayname: ${user.uid}');
       await _firestore.collection('users').doc(user.uid).set({
         'uid': user.uid,
         'email': user.email,
-        'displayName': user.displayName,
+        'displayName': displayName,
         'profileImageUrl': null,
       });
     }

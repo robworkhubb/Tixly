@@ -19,7 +19,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _register() async {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final displayName = _usernameController.text.trim();
 
+    print('Nome inserito: "$displayName"');
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -27,9 +31,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final user = await authService.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        displayName: _usernameController.text.trim(),
+        email: email,
+        password: password,
+        displayName: displayName,
       );
 
       if (user != null) {
