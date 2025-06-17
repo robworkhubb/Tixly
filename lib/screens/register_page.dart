@@ -23,7 +23,6 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = _passwordController.text;
     final displayName = _usernameController.text.trim();
 
-    print('Nome inserito: "$displayName"');
     setState(() {
       _isLoading = true;
       _errorMessage = null;
