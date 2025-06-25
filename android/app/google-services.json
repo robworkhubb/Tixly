@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1048005640444",
+    "project_id": "tixly-bb7f2",
+    "storage_bucket": "tixly-bb7f2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048005640444:android:8ddcdceeb27a54ebf2d779",
+        "android_client_info": {
+          "package_name": "com.tixly.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr0mPDg2c8Fw4LdI64UM7sjzvGhhSt7vE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
