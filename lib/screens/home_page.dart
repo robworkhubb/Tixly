@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tixly/screens/feed_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:tixly/screens/profile_page.dart';
+import 'package:tixly/widgets/create_post_sheet.dart';
+import '../providers/auth_provider.dart' as app;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +20,7 @@ class _HomePageState extends State<HomePage> {
     Center(child: Text('Diario')),
     SizedBox(),
     Center(child: Text('Wallet')),
-    Center(child: Text('Profilo')),
+    ProfilePage(),
   ];
 
   void _onTabSelected(int index) => setState(() => _currentIndex = index);
@@ -33,7 +36,14 @@ class _HomePageState extends State<HomePage> {
         initialActiveIndex: _currentIndex,
         onTap: (index) {
           if(index == 2) {
-            //TODO: Mostra crea post
+            showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                builder: (_) => CreatePostSheet(),
+            );
           } else {
             setState(() {
               _currentIndex = index;

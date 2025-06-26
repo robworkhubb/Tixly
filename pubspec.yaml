@@ -41,6 +41,10 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_svg: ^2.2.0
   convex_bottom_bar: ^3.2.0
+  firebase_storage: ^12.4.7
+  image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
+  cloudinary_public: ^0.23.1
 
 dev_dependencies:
   flutter_test:

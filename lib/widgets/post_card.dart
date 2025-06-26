@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     // uid dell'utente corrente (null se non loggato ancora)
     final uid = context.watch<UserProvider>().user?.uid;
-
+    debugPrint('PostCard uid: $uid for post ${widget.post.id}');
     final postRef = FirebaseFirestore.instance
         .collection('posts')
         .doc(widget.post.id);
@@ -44,7 +45,15 @@ class _PostCardState extends State<PostCard> {
           if (widget.post.mediaUrl?.isNotEmpty == true)
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.network(widget.post.mediaUrl!, fit: BoxFit.cover),
+              child: CachedNetworkImage(
+                imageUrl: widget.post.mediaUrl!,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => const AspectRatio(
+                  aspectRatio: 16/9,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                errorWidget: (_, __, ___) => const Icon(Icons.broken_image),
+              )
             ),
 
           Padding(

@@ -1,11 +1,17 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tixly/models/post_model.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:tixly/services/cloudinary_service.dart';
 
 class PostProvider with ChangeNotifier {
   List<Post> _posts = [];
   bool _isLoading = false;
   final _db = FirebaseFirestore.instance;
+  final _storage = FirebaseStorage.instance;
+  final _cloudinary = CloudinaryService();
 
   List<Post> get posts => _posts;
   bool get isLoading => _isLoading;
@@ -29,12 +35,34 @@ class PostProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addPosts(Post post) async {
+  Future<void> addPost({
+    required String userId,
+    required String content,
+    File? imageFile,
+  }) async {
+    String? downloadUrl;
     try {
-      await FirebaseFirestore.instance.collection('posts').add(post.toMap());
+      debugPrint('🛠️ addPost START -- hasImage: ${imageFile != null}');
+
+      if (imageFile != null) {
+        downloadUrl = await _cloudinary.uploadImage(imageFile.path);
+      }
+
+      // ④ crea il documento in Firestore
+      final doc = await _db.collection('posts').add({
+        'userId': userId,
+        'content': content.trim(),
+        'mediaUrl': downloadUrl,
+        'likes': 0,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      debugPrint('📝 post created: ${doc.id}');
+
+      // ⑤ ricarica i post
       await fetchPosts();
-    } catch (e) {
-      debugPrint("Errore nel addPosts");
+      debugPrint('🔄 fetchPosts DONE');
+    } catch (e, st) {
+      debugPrint('❌ addPost FAILED: $e\n$st');
     }
   }
 

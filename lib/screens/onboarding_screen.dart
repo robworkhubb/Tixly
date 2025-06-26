@@ -3,7 +3,8 @@ import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final VoidCallback onFinish;
+  const OnboardingScreen({Key? key, required this.onFinish}) : super(key: key);
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -41,10 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } else {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onBoardingSeen', true);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-      );
+      widget.onFinish();
     }
   }
 

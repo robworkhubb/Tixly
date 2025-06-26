@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tixly/providers/user_provider.dart';
+import 'package:tixly/screens/home_page.dart';
 import 'package:tixly/screens/register_page.dart';
 import 'package:tixly/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:tixly/providers/auth_provider.dart' as app;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -135,19 +138,37 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: true,
                       ),
                       const SizedBox(height: 24),
-                      _isLoading
-                          ? const CircularProgressIndicator()
-                          : ElevatedButton(
-                        onPressed: login,
+                      ElevatedButton(
+                        onPressed: () async {
+                          setState(() => _isLoading = true);
+
+                          final ok = await context
+                              .read<app.AuthProvider>()
+                              .login(_emailController.text.trim(), _passwordController.text.trim());
+
+                          setState(() => _isLoading = false);
+
+                          if (!ok) {
+                            setState(() => _errorMessage = 'Credenziali errate');
+                            return;
+                          }
+
+                          // LOGIN OK ➔ naviga e rimuovi tutte le rotte precedenti
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                                (route) => false,
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF008080),
+                          backgroundColor: const Color(0xFF008080),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          shape:
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: const Text('Login'),
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('Login'),
                       ),
                       if (_errorMessage != null)
                         Padding(
