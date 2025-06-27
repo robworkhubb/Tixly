@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tixly/screens/diary_screen.dart';
 import 'package:tixly/screens/feed_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:tixly/screens/profile_page.dart';
 import 'package:tixly/widgets/create_post_sheet.dart';
-import '../providers/auth_provider.dart' as app;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _screens =  [
     FeedScreen(),
-    Center(child: Text('Diario')),
+    DiaryScreen(),
     SizedBox(),
     Center(child: Text('Wallet')),
     ProfilePage(),

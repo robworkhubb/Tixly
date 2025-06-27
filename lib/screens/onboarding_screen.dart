@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onFinish;
-  const OnboardingScreen({Key? key, required this.onFinish}) : super(key: key);
+  const OnboardingScreen({super.key, required this.onFinish});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();

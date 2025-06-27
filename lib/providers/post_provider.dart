@@ -3,7 +3,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tixly/models/post_model.dart';
-import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:tixly/services/cloudinary_service.dart';
 
 class PostProvider with ChangeNotifier {

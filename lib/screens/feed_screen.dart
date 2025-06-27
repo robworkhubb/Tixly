@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:tixly/providers/user_provider.dart';
 import '../providers/post_provider.dart';
 import '../widgets/post_card.dart';
-import '../providers/auth_provider.dart' as app;
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -14,7 +13,7 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  bool _firstLoadDone = false;
+  final bool _firstLoadDone = false;
 
   @override
   void initState() {
@@ -39,11 +38,11 @@ class _FeedScreenState extends State<FeedScreen> {
         }
 
         return RefreshIndicator(
+          onRefresh: postProv.fetchPosts,
           child: ListView.builder(
             itemBuilder: (_, i) => PostCard(post: posts[i], uid: uid),
             itemCount: posts.length,
           ),
-          onRefresh: postProv.fetchPosts,
         );
       },
     );

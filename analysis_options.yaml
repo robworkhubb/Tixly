@@ -8,11 +8,6 @@
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
-  errors:
-    unused_element: ignore
-    unused_field: ignore
-    unused_import: ignore ignore ignore ignore
-    unused_local_variable: ignore ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

@@ -1,36 +1,61 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tixly/models/memory_model.dart';
+import 'package:flutter/foundation.dart';
+import '../models/memory_model.dart';
+import '../services/cloudinary_service.dart';
 
 class MemoryProvider with ChangeNotifier {
-  List<Memory> _memories = [];
+  final _db = FirebaseFirestore.instance;
+  final _cloudinary = CloudinaryService();
 
+  List<Memory> _memories = [];
   List<Memory> get memories => _memories;
 
+  /// Carica tutti i ricordi dell’utente
   Future<void> fetchMemories(String userId) async {
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('memories')
-          .where('userId', isEqualTo: userId)
-          .orderBy('date', descending: true)
-          .get();
-      _memories = snapshot.docs.map((doc) {
-        return Memory.fromMap(doc.data(), doc.id);
-      }).toList();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Errore fetchMemory: $e');
-    }
+    final snap = await _db
+        .collection('memories')
+        .where('userId', isEqualTo: userId)
+        .orderBy('date', descending: true)
+        .get();
+    _memories = snap.docs
+        .map((doc) => Memory.fromMap(doc.data(), doc.id))
+        .toList();
+    notifyListeners();
   }
 
-  Future<void> addMemory(Memory memories) async {
+  /// Aggiunge un nuovo ricordo (opzionale upload immagine su Cloudinary)
+  Future<void> addMemory({
+    required String userId,
+    required String title,
+    required String artist,
+    required String location,
+    required String description,
+    required DateTime date,
+    File? imageFile,
+    required int rating,
+  }) async {
+    String? imageUrl;
     try {
-      await FirebaseFirestore.instance
-          .collection('memories')
-          .add(memories.toMap());
-      await fetchMemories(memories.userId);
+      if (imageFile != null) {
+        imageUrl = await _cloudinary.uploadImage(imageFile.path);
+      }
+
+      await _db.collection('memories').add({
+        'userId': userId,
+        'title': title,
+        'artist': artist,
+        'location': location,
+        'description': description,
+        'date': Timestamp.fromDate(date),
+        'imageUrl': imageUrl,
+        'rating': rating,
+      });
+
+      // ricarica la lista
+      await fetchMemories(userId);
     } catch (e) {
-      debugPrint("Errore aggiunta ricordo: $e");
+      debugPrint('❌ addMemory error: $e');
     }
   }
 }
