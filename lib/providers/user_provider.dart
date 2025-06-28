@@ -1,36 +1,70 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tixly/models/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb;
+import '../models/user_model.dart';
 
-class UserProvider extends ChangeNotifier {
-  //Accediamo al modello che rappresenta l'utente attualmente loggato
+class UserProvider with ChangeNotifier {
+  final _db = FirebaseFirestore.instance;
+
+  /// Profilo dell'utente attualmente autenticato
   User? _user;
-
-  //Getter per far leggere lo stato da fuori
   User? get user => _user;
 
-  // Metodo per caricare l'utente da Firebase usando il suo UID
+  /// Cache per gli altri profili: userId -> UserModel
+  final Map<String, User> _cache = {};
+  Map<String, User> get cache => Map.unmodifiable(_cache);
+
+  /// Carica il profilo dell'utente corrente dal DB
   Future<void> loadUser(String uid) async {
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
-      //Se esiste trasforma i dati in un oggetto user e notifica la UI
+      final doc = await _db.collection('users').doc(uid).get();
       if (doc.exists) {
-        _user = User.fromMap(doc.data()!);
+        _user = User.fromMap(doc.data()!, doc.id);
         notifyListeners();
-      } else {
-        await fb.FirebaseAuth.instance.signOut();
       }
     } catch (e) {
-      debugPrint("Errore loadUser: $e");
+      debugPrint('❌ loadUser error: $e');
     }
   }
 
-  void clearUser() {
+  /// Carica e mette in cache il profilo di qualsiasi utente (per commenti, ecc.)
+  Future<void> loadProfile(String uid) async {
+    // Evito doppio fetch
+    if (_cache.containsKey(uid)) return;
+    try {
+      final doc = await _db.collection('users').doc(uid).get();
+      if (doc.exists) {
+        _cache[uid] = User.fromMap(doc.data()!, doc.id);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('❌ loadProfile error: $e');
+    }
+  }
+
+  /// Aggiorna il profilo corrente (displayName, avatar)
+  Future<void> updateProfile({String? displayName, String? profileImageUrl}) async {
+    if (_user == null) return;
+    final uid = _user!.uid;
+    final data = <String, dynamic>{};
+    if (displayName != null) data['displayName'] = displayName;
+    if (profileImageUrl != null) data['profileImageUrl'] = profileImageUrl;
+
+    try {
+      await _db.collection('users').doc(uid).update(data);
+      // Rifresco il profilo locale
+      _user = user!.copyWith(
+        displayName: displayName,
+        profileImageUrl: profileImageUrl,
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('❌ updateProfile error: $e');
+    }
+  }
+
+ void clearUser() {
     _user = null;
     notifyListeners();
-  }
+ }
+
 }

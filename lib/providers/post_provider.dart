@@ -1,37 +1,68 @@
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tixly/models/post_model.dart';
 import 'package:tixly/services/cloudinary_service.dart';
 
 class PostProvider with ChangeNotifier {
-  List<Post> _posts = [];
-  bool _isLoading = false;
   final _db = FirebaseFirestore.instance;
-  final _storage = FirebaseStorage.instance;
   final _cloudinary = CloudinaryService();
 
+  List<Post> _posts = [];
   List<Post> get posts => _posts;
-  bool get isLoading => _isLoading;
 
-  Future<void> fetchPosts() async {
+  DocumentSnapshot? _lastDoc;
+  bool _hasMore = true;
+  bool _isLoading = false;
+  static const int _perPage = 10;
+
+  bool get isLoading => _isLoading;
+  bool get hasMore => _hasMore;
+
+  /// Carica la prima pagina (o ricarica tutto)
+  Future<void> fetchPosts({bool clear = false}) async {
+    if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('posts')
-          .orderBy('timestamp', descending: true)
-          .get();
-      _posts = snapshot.docs.map((doc) {
-        return Post.fromMap(doc.data(), doc.id);
-      }).toList();
-      notifyListeners();
-      debugPrint('Docs: ${snapshot.docs.length}');
-    } catch (e) {
-      debugPrint("Errore nel fetchPosts: $e");
+    if (clear) {
+      _posts.clear();
+      _lastDoc = null;
+      _hasMore = true;
     }
+
+    Query query = _db
+        .collection('posts')
+        .orderBy('timestamp', descending: true)
+        .limit(_perPage);
+
+    if (_lastDoc != null) {
+      query = query.startAfterDocument(_lastDoc!);
+    }
+
+    final QuerySnapshot<Map<String, dynamic>> snap =
+    await FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('timestamp', descending: true)
+        .limit(_perPage)
+        .get();
+    final fetched = snap.docs.map((d) => Post.fromMap(d.data(), d.id)).toList();
+
+    if (fetched.length < _perPage) {
+      _hasMore = false; // non ci sono altre pagine
+    }
+
+    if (clear) {
+      _posts = fetched;
+    } else {
+      _posts.addAll(fetched);
+    }
+
+    if (snap.docs.isNotEmpty) {
+      _lastDoc = snap.docs.last;
+    }
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<void> addPost({
@@ -57,8 +88,6 @@ class PostProvider with ChangeNotifier {
       });
       debugPrint('📝 post created: ${doc.id}');
 
-      // ⑤ ricarica i post
-      await fetchPosts();
       debugPrint('🔄 fetchPosts DONE');
     } catch (e, st) {
       debugPrint('❌ addPost FAILED: $e\n$st');
@@ -86,4 +115,3 @@ class PostProvider with ChangeNotifier {
     });
   }
 }
-

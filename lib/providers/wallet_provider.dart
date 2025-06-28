@@ -44,7 +44,7 @@ class WalletProvider with ChangeNotifier {
         'userId': userId,
         'type': type.name,
         'fileUrl': fileUrl,
-        'createdAt': Timestamp.now
+        'createdAt': Timestamp.now()
       };
       await _db.collection('tickets').add(docData);
       await fetchTickets(userId);

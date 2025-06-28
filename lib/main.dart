@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 // FIREBASE
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tixly/providers/comment_provider.dart';
 
 // SERVICES & PROVIDERS
 import 'services/auth_service.dart';
@@ -92,6 +93,7 @@ class _TixlyAppState extends State<TixlyApp> {
 
           /// 3️⃣  altri ChangeNotifier
           ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => CommentProvider()),
           ChangeNotifierProvider(create: (_) => WalletProvider()),
           ChangeNotifierProvider(create: (_) => MemoryProvider()),
           ChangeNotifierProvider(create: (_) => EventProvider()),

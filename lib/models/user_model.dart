@@ -11,7 +11,7 @@ class User {
     this.profileImageUrl,
   });
 
-  factory User.fromMap(Map<String, dynamic> data) {
+  factory User.fromMap(Map<String, dynamic> data, String docId) {
     return User(
       uid: data['uid'],
       email: data['email'],
@@ -27,5 +27,14 @@ class User {
       'displayName': displayName,
       'profileImageUrl': profileImageUrl,
     };
+  }
+
+  User copyWith({String? displayName, String? profileImageUrl}) {
+    return User(
+      uid: uid,
+      email: email,
+      displayName: displayName ?? this.displayName,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+    );
   }
 }

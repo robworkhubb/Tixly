@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tixly/providers/comment_provider.dart';
 import 'package:tixly/providers/post_provider.dart';
 import 'package:tixly/providers/user_provider.dart';
+import 'package:tixly/screens/comment_sheet.dart';
 import '../models/post_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -19,6 +22,7 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
+    final cProv = context.read<CommentProvider>();
     // uid dell'utente corrente (null se non loggato ancora)
     final uid = context.watch<UserProvider>().user?.uid;
     debugPrint('PostCard uid: $uid for post ${widget.post.id}');
@@ -91,6 +95,29 @@ class _PostCardState extends State<PostCard> {
                     return Text(count);
                   },
                 ),
+
+                const SizedBox(width: 16),
+
+                IconButton(
+                  icon: const Icon(Icons.comment),
+                  onPressed: (){
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                        ),
+                        builder: (_) => CommentSheet(postId: widget.post.id),
+                    );
+                  },
+                ),
+                const SizedBox(width: 4),
+                Consumer<CommentProvider>(
+                    builder: (ctx, cProv, _) {
+                      final comments = cProv.commentsCache[widget.post.id] ?? [];
+                      return Text(comments.length.toString());
+                    }
+                )
               ],
             ),
           ),
