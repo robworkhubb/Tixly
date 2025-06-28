@@ -1,9 +1,16 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum TicketType { pdf, image, qr }
+
 class Ticket {
   final String id;
   final String eventId;
   final String userId;
-  final String type;
+  final TicketType type;
   final String? fileUrl;
+  final DateTime createdAt;
 
   Ticket({
     required this.id,
@@ -11,15 +18,20 @@ class Ticket {
     required this.userId,
     required this.type,
     this.fileUrl,
+    required this.createdAt,
   });
 
   factory Ticket.fromMap(Map<String, dynamic> data, String docId) {
     return Ticket(
       id: docId,
-      eventId: data['eventId'],
-      userId: data['userId'],
-      type: data['type'],
-      fileUrl: data['fileUrl'],
+      eventId: data['eventId'] as String,
+      userId: data['userId'] as String,
+      type: TicketType.values.firstWhere(
+          (e) => e.name == data['type'],
+        orElse: () => TicketType.pdf,
+      ),
+      fileUrl: data['fileUrl'] as String?,
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }
 
@@ -29,6 +41,7 @@ class Ticket {
       'userId': userId,
       'type': type,
       'fileUrl': fileUrl,
+      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 }

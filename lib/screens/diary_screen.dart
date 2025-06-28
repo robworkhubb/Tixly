@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:tixly/widgets/create_memory_sheet.dart';
 import 'package:tixly/widgets/memory_card.dart';
 import '../providers/memory_provider.dart';
+import '../providers/auth_provider.dart';
+import '../models/memory_model.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key});
@@ -19,6 +21,12 @@ class _DiaryScreenState extends State<DiaryScreen> {
     super.initState();
     _scrollController = ScrollController()
       ..addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      final userId = context.read<AuthProvider>().firebaseUser?.uid;
+      if(userId != null) {
+        context.read<MemoryProvider>().fetchMemories(userId);
+      }
+    });
   }
 
   void _onScroll() {
@@ -62,27 +70,33 @@ class _DiaryScreenState extends State<DiaryScreen> {
             ),
             const SizedBox(height: 24),
             Expanded(
-                child: memories.isEmpty
-                    ? const Center (
-                  child: Text(
-                    'Non hai ancora salvato ricordi. \n Aggiungine e rivivi le tue esperienze!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.black45,
-                        fontSize: 16
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    final userId = context.read<AuthProvider>().firebaseUser!.uid;
+                    context.read<MemoryProvider>().fetchMemories(userId);
+                  },
+                  child: memories.isEmpty
+                      ? const Center (
+                    child: Text(
+                      'Non hai ancora salvato ricordi. \n Aggiungine e rivivi le tue esperienze!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.black45,
+                          fontSize: 16
+                      ),
                     ),
+                  )
+                      : ListView.builder(
+                      controller: _scrollController,
+                      itemCount: memories.length,
+                      itemBuilder: (context, i){
+                        final m = memories[i];
+                        return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                          child: MemoryCard(memory: m),
+                        );
+                      }
                   ),
-                )
-                    : ListView.builder(
-                    controller: _scrollController,
-                    itemCount: memories.length,
-                    itemBuilder: (context, i){
-                      final m = memories[i];
-                      return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                        child: MemoryCard(memory: m),
-                      );
-                    }
                 )
             )
           ],

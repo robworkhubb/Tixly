@@ -1,5 +1,6 @@
-package com.tixly.app
+package com.tixly.app.tixly
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity : FlutterActivity()
+class MainActivity: FlutterActivity() {
+}

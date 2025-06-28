@@ -4,9 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/memory_provider.dart';
 import '../providers/auth_provider.dart';
+import 'package:tixly/models/memory_model.dart';
 
 class CreateMemorySheet extends StatefulWidget {
-  const CreateMemorySheet({super.key});
+  final Memory? memory;
+
+  const CreateMemorySheet({Key? key, this.memory}) : super(key: key);
 
   @override
   State<CreateMemorySheet> createState() => _CreateMemorySheetState();
@@ -14,14 +17,15 @@ class CreateMemorySheet extends StatefulWidget {
 
 class _CreateMemorySheetState extends State<CreateMemorySheet> {
   final _formKey = GlobalKey<FormState>();
-  final _titleCtrl       = TextEditingController();
-  final _artistCtrl      = TextEditingController();
-  final _locationCtrl    = TextEditingController();
+  final _titleCtrl = TextEditingController();
+  final _artistCtrl = TextEditingController();
+  final _locationCtrl = TextEditingController();
   final _descriptionCtrl = TextEditingController();
   DateTime? _selectedDate;
   File? _imageFile;
   int _rating = 0;
   bool _isLoading = false;
+  String? _exsistingImageUrl;
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -45,14 +49,14 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
 
     final userId = context.read<AuthProvider>().firebaseUser!.uid;
     await context.read<MemoryProvider>().addMemory(
-      userId:     userId,
-      title:      _titleCtrl.text.trim(),
-      artist:     _artistCtrl.text.trim(),
-      location:   _locationCtrl.text.trim(),
-      description:_descriptionCtrl.text.trim(),
-      date:       _selectedDate!,
-      imageFile:  _imageFile,
-      rating:     _rating,
+      userId: userId,
+      title: _titleCtrl.text.trim(),
+      artist: _artistCtrl.text.trim(),
+      location: _locationCtrl.text.trim(),
+      description: _descriptionCtrl.text.trim(),
+      date: _selectedDate!,
+      imageFile: _imageFile,
+      rating: _rating,
     );
 
     setState(() => _isLoading = false);
@@ -70,7 +74,10 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Nuovo ricordo', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Nuovo ricordo',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 16),
 
                 // Titolo
@@ -93,7 +100,9 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                 InkWell(
                   onTap: _pickDate,
                   child: InputDecorator(
-                    decoration: const InputDecoration(labelText: 'Data e luogo'),
+                    decoration: const InputDecoration(
+                      labelText: 'Data e luogo',
+                    ),
                     child: Text(
                       _selectedDate == null
                           ? 'Seleziona data'
@@ -121,23 +130,32 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
 
                 // Rating
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(5, (i) {
                     return IconButton(
-                      icon: Icon(i < _rating ? Icons.star : Icons.star_border, color: Colors.amber),
+                      icon: Icon(
+                        i < _rating ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                      ),
                       onPressed: () => setState(() => _rating = i + 1),
                     );
                   }),
                 ),
-                const SizedBox(height: 8),
 
                 // Immagine
-                _imageFile != null
-                    ? Image.file(_imageFile!, height: 120, fit: BoxFit.cover)
-                    : OutlinedButton.icon(
-                  onPressed: _pickImage,
-                  icon: const Icon(Icons.image),
-                  label: const Text('Aggiungi foto'),
-                ),
+                if (_imageFile != null)
+                // se ho scelto un File locale
+                  Image.file(_imageFile!, height: 120, fit: BoxFit.cover)
+                else if (_exsistingImageUrl?.isNotEmpty == true)
+                // se sto editando e ho già una URL
+                  Image.network(_exsistingImageUrl!, height: 120, fit: BoxFit.cover)
+                else
+                // altrimenti il bottone "Aggiungi foto"
+                  OutlinedButton.icon(
+                    onPressed: _pickImage,
+                    icon: const Icon(Icons.image),
+                    label: const Text('Aggiungi foto'),
+                  ),
                 const SizedBox(height: 16),
 
                 // Pulsante salva
@@ -146,7 +164,11 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _submit,
                     child: _isLoading
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                         : const Text('Salva'),
                   ),
                 ),

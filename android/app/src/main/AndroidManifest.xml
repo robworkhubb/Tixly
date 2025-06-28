@@ -7,7 +7,7 @@
         android:label="tixly"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.tixly.app.tixly.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""

@@ -9,8 +9,8 @@ class Memory {
   final String artist;
   final String description;
   final String location;
-  final String? mediaUrl;
-  final int stars;
+  final String? imageUrl;
+  final int rating;
   final DateTime date;
 
   Memory({
@@ -21,8 +21,8 @@ class Memory {
     required this.artist,
     required this.location,
     required this.description,
-    this.mediaUrl,
-    required this.stars,
+    this.imageUrl,
+    required this.rating,
     required this.date,
   });
 
@@ -35,9 +35,9 @@ class Memory {
       artist: data['artist']?.toString()    ?? 'Artista sconosciuto',
       date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       location: data['location']?.toString()  ?? 'Luogo sconosciuto',
-      mediaUrl: data['mediaUrl']?.toString(),
+      imageUrl: data['imageUrl']?.toString(),
       description: data['description']?.toString() ?? '',
-      stars: int.tryParse(data['stars']?.toString() ?? '') ?? 0,
+      rating: int.tryParse(data['rating']?.toString() ?? '') ?? 0,
     );
   }
 
@@ -48,8 +48,8 @@ class Memory {
       'title': title,
       'artist': artist,
       'description': description,
-      'mediaUrl': mediaUrl,
-      'stars': stars,
+      'imageUrl': imageUrl,
+      'rating': rating,
       'date': date,
     };
   }
