@@ -24,7 +24,7 @@ class WalletProvider with ChangeNotifier {
       }).toList();
       notifyListeners();
     } catch (e) {
-      debugPrint('Errore fetchBiglietti: $e');
+      debugPrint('❌Errore fetchBiglietti: $e');
     }
   }
 
@@ -49,7 +49,7 @@ class WalletProvider with ChangeNotifier {
       await _db.collection('tickets').add(docData);
       await fetchTickets(userId);
     } catch (e) {
-      debugPrint('Errore addTicket: $e');
+      debugPrint('❌Errore addTicket: $e');
     }
   }
 
@@ -58,7 +58,7 @@ class WalletProvider with ChangeNotifier {
       await _db.collection('tickets').doc(id).delete();
       await fetchTickets(userId);
     }catch (e){
-      debugPrint('Errore delete tickets: $e');
+      debugPrint('❌Errore delete tickets: $e');
     }
   }
 
