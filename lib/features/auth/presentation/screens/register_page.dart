@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tixly/features/auth/data/services/auth_service.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tixly/features/auth/data/providers/auth_provider.dart' as app;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tixly/features/feed/data/providers/comment_provider.dart';
 import 'package:tixly/features/profile/data/providers/user_provider.dart';
 import 'package:tixly/features/feed/data/providers/post_provider.dart';
 import 'package:tixly/features/feed/presentation/widgets/post_card.dart';
-import 'package:tixly/features/feed/presentation/widgets/create_post_sheet.dart';
-import 'package:tixly/features/feed/presentation/screens/comment_sheet.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key? key}) : super(key: key);
@@ -21,7 +20,15 @@ class _FeedScreenState extends State<FeedScreen> {
   void initState() {
     super.initState();
     // Carica la prima pagina
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final postProv = context.watch<PostProvider>();
+      await postProv.fetchPosts(clear: true);
+
+      final commentProv = context.read<CommentProvider>();
+      for (final p in postProv.posts) {
+        await commentProv.fetchComments(p.id);
+      }
+
       if (!_firstLoadDone) {
         context.read<PostProvider>().fetchPosts(clear: true);
         _firstLoadDone = true;

@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tixly/features/memories/data/models/memory_model.dart';
-import 'package:tixly/core/services/cloudinary_service.dart';
+import 'package:tixly/core/services/supabase_storage_service.dart';
 
 class MemoryProvider with ChangeNotifier {
   final _db = FirebaseFirestore.instance;
-  final _cloudinary = CloudinaryService();
+  final SupabaseStorageService _storageService = SupabaseStorageService();
 
   List<Memory> _memories = [];
   List<Memory> get memories => _memories;
@@ -38,7 +38,13 @@ class MemoryProvider with ChangeNotifier {
     String? imageUrl;
     try {
       if (imageFile != null) {
-        imageUrl = await _cloudinary.uploadImage(imageFile.path);
+        // Upload immagine su Supabase Storage
+        final resp = await _storageService.uploadFile(
+          file: imageFile,
+          bucket: 'memories',
+          isPdf: false,
+        );
+        imageUrl = resp['rawUrl']; // usa l'url del file caricato
       }
 
       await _db.collection('memories').add({
@@ -52,7 +58,7 @@ class MemoryProvider with ChangeNotifier {
         'rating': rating,
       });
 
-      // ricarica la lista
+      // Ricarica lista memorie
       await fetchMemories(userId);
     } catch (e) {
       debugPrint('❌ addMemory error: $e');

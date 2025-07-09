@@ -46,12 +46,18 @@ dependencies:
   cached_network_image: ^3.4.1
   cloudinary_public: ^0.23.1
   intl: ^0.20.2
-  file_picker: ^10.2.0
   modal_bottom_sheet: ^3.0.0
   photo_view: ^0.15.0
   mobile_scanner: ^7.0.1
   flutter_cache_manager: ^3.4.1
-  flutter_pdfview: ^1.4.1+1
+  http: ^1.4.0
+  path_provider: ^2.1.5
+  url_launcher: ^6.3.1
+  pdfx: ^2.9.2
+  flutter_cached_pdfview: ^0.4.3
+  supabase_flutter: ^2.0.0
+  file_picker: ^10.2.0
+  flutter_dotenv: ^5.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

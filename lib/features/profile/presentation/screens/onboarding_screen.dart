@@ -47,7 +47,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final page = _pages[_currentPage];
 
     return Scaffold(
       body: Stack(

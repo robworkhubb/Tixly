@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tixly/features/wallet/data/models/ticket_model.dart';
 import 'package:tixly/features/auth/data/providers/auth_provider.dart' as app;
 import 'package:tixly/features/wallet/data/providers/wallet_provider.dart';
+import 'package:tixly/features/wallet/presentation/screens/ticket_detail_screen.dart';
 import 'package:tixly/features/wallet/presentation/widgets/create_ticket_sheet.dart';
 import 'package:tixly/features/wallet/presentation/widgets/edit_ticket_sheet.dart';
 import 'package:tixly/features/wallet/presentation/widgets/ticket_card.dart';
@@ -35,10 +36,10 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget build(BuildContext context) {
     // Selettori isolano i rebuild
     final tickets = context.select<WalletProvider, List<Ticket>>(
-      (prov) => prov.ticket,
+          (prov) => prov.ticket,
     );
     final isLoading = context.select<WalletProvider, bool>(
-      (prov) => prov.isLoading,
+          (prov) => prov.isLoading,
     );
 
     return Scaffold(
@@ -86,7 +87,7 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget _buildTicketList(List<Ticket> tickets) {
     return ListView.builder(
       itemCount: tickets.length,
-      itemExtent: 100, // altezza fissa per performance
+      itemExtent: 140, // altezza fissa per performance
       cacheExtent: 200,
       itemBuilder: (context, i) {
         final ticket = tickets[i];
@@ -97,9 +98,19 @@ class _WalletScreenState extends State<WalletScreen> {
           confirmDismiss: (_) => _confirmDelete(context),
           onDismissed: (_) =>
               _walletProv.deleteTicket(ticket.id, ticket.userId),
-          child: TicketCard(
-            ticket: ticket,
-            onEdit: () => _showEditSheet(ticket),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TicketDetailScreen(ticket: ticket),
+                  ),
+              );
+            },
+            child: TicketCard(
+              ticket: ticket,
+              onEdit: () => _showEditSheet(ticket),
+            ),
           ),
         );
       },

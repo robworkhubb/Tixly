@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tixly/features/feed/data/providers/comment_provider.dart';
-import 'package:tixly/features/feed/data/models/comment_model.dart';
-import 'package:tixly/features/profile/data/providers/user_provider.dart';
 import 'package:tixly/features/auth/data/providers/auth_provider.dart';
 import '../widgets/comment_card.dart';
 
@@ -49,7 +47,6 @@ class _CommentSheetState extends State<CommentSheet> {
   Widget build(BuildContext context) {
     final comments =
         context.watch<CommentProvider>().commentsCache[widget.postId] ?? [];
-
     return SafeArea(
       child: Padding(
         padding: MediaQuery.of(context).viewInsets + const EdgeInsets.all(16),

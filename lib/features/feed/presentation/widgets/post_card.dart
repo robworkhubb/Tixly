@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tixly/features/feed/data/models/post_model.dart';
-import 'package:tixly/features/profile/data/models/user_model.dart';
 import 'package:tixly/features/feed/data/providers/post_provider.dart';
-import 'package:tixly/features/feed/data/providers/comment_provider.dart';
 import 'package:tixly/features/profile/data/providers/user_provider.dart';
 import '../screens/comment_sheet.dart';
 
@@ -27,6 +25,7 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     final userProv = context.watch<UserProvider>();
 
+
     // Se non abbiamo ancora caricato il profilo dell'autore, chiamalo:
     if (!userProv.cache.containsKey(widget.post.userId)) {
       context.read<UserProvider>().loadProfile(widget.post.userId);
@@ -45,6 +44,7 @@ class _PostCardState extends State<PostCard> {
     final likeStream = widget.currentUid != null
         ? postRef.collection('likes').doc(widget.currentUid).snapshots()
         : const Stream<DocumentSnapshot>.empty();
+    final commentsStream = postRef.collection('comments').snapshots();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -127,7 +127,7 @@ class _PostCardState extends State<PostCard> {
                     builder: (_, snap) {
                       final count = (snap.data?.data()?['likes'] ?? 0)
                           .toString();
-                      return Text(count);
+                      return Text(count, style: TextStyle(fontSize: 15));
                     },
                   ),
 
@@ -150,13 +150,12 @@ class _PostCardState extends State<PostCard> {
                     },
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    (context
-                                .watch<CommentProvider>()
-                                .commentsCache[widget.post.id]
-                                ?.length ??
-                            0)
-                        .toString(),
+                  StreamBuilder(
+                      stream: commentsStream,
+                      builder: (ctx, snap) {
+                        final count = snap.hasData ? snap.data!.docs.length : '0';
+                        return Text(count.toString(), style: TextStyle(fontSize: 15));
+                      }
                   ),
 
                   const Spacer(),

@@ -23,6 +23,7 @@ import 'features/profile/presentation/screens/onboarding_screen.dart';
 // VARIE
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,10 @@ void main() async {
             measurementId: 'G-XVFJYKZWN9',
           )
         : null,
+  );
+  await Supabase.initialize(
+    url: 'https://gpjdeuihwrmdqxzcmxxs.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwamRldWlod3JtZHF4emNteHhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNjcwMzEsImV4cCI6MjA2NzY0MzAzMX0.TWWATPsUkcyn5FD4ggR2_utBVGiw4PHbtpQCcSjFbz0',
   );
   runApp(const TixlyApp());
 }

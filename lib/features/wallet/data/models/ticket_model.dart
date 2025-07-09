@@ -8,6 +8,7 @@ class Ticket {
   final String userId;
   final TicketType type;
   final String? fileUrl;
+  final String? rawFileUrl;
   final DateTime createdAt;
   final DateTime eventDate;
 
@@ -17,6 +18,7 @@ class Ticket {
     required this.userId,
     required this.type,
     this.fileUrl,
+    this.rawFileUrl,
     required this.createdAt,
     required this.eventDate,
   });
@@ -31,6 +33,7 @@ class Ticket {
         orElse: () => TicketType.pdf,
       ),
       fileUrl: data['fileUrl'] as String?,
+      rawFileUrl: data['rawFileUrl'] as String?,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       eventDate: (data['eventDate'] as Timestamp).toDate(),
     );
@@ -42,6 +45,7 @@ class Ticket {
       'userId': userId,
       'type': type,
       'fileUrl': fileUrl,
+      'rawFileUrl': rawFileUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'eventDate': eventDate,
     };

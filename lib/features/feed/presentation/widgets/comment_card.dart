@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tixly/features/feed/data/models/comment_model.dart';
-import 'package:tixly/features/profile/data/models/user_model.dart';
-import 'package:tixly/features/feed/data/providers/comment_provider.dart';
 import 'package:tixly/features/profile/data/providers/user_provider.dart';
 
 class CommentCard extends StatelessWidget {

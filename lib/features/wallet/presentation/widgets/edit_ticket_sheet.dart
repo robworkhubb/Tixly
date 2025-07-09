@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tixly/features/wallet/data/providers/wallet_provider.dart';
 import 'package:tixly/features/wallet/data/models/ticket_model.dart';
 import 'package:tixly/features/auth/data/providers/auth_provider.dart' as app;
-import 'package:cloudinary_public/cloudinary_public.dart';
 
 class EditTicketSheet extends StatefulWidget {
   final Ticket ticket;
@@ -19,11 +17,9 @@ class EditTicketSheet extends StatefulWidget {
 class _EditTicketSheetState extends State<EditTicketSheet> {
   late TextEditingController _eventIdCtrl;
   late TicketType _selectedType;
-  File? _newFile;
   File? _pickedFile;
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  String? _initialFileUrl;
   DateTime? _eventDate;
 
   @override
@@ -35,7 +31,7 @@ class _EditTicketSheetState extends State<EditTicketSheet> {
       (t) => t.name.toLowerCase() == stored,
       orElse: () => TicketType.pdf,
     );
-    _initialFileUrl = widget.ticket.fileUrl;
+    _eventDate = widget.ticket.eventDate;
   }
 
   Future<void> _pickDate() async {
@@ -64,6 +60,7 @@ class _EditTicketSheetState extends State<EditTicketSheet> {
       eventId: _eventIdCtrl.text.trim(),
       type: _selectedType,
       newFile: _pickedFile,
+      eventDate: _eventDate,
     );
     setState(() => _isLoading = false);
     if (mounted) Navigator.pop(context);
@@ -78,7 +75,6 @@ class _EditTicketSheetState extends State<EditTicketSheet> {
       setState(() {
         _pickedFile = File(result.files.single.path!);
         // se vogliamo far sparire l'anteprima vecchia
-        _initialFileUrl = null;
       });
     }
   }
@@ -136,7 +132,6 @@ class _EditTicketSheetState extends State<EditTicketSheet> {
                   ),
                 ),
                 const SizedBox(height: 12),
-
                 // File picker / preview
                 if (_pickedFile != null)
                   Container(

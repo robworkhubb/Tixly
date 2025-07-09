@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0; // 0 = Feed, 1 = Diario, 2 = Wallet, 3 = Profilo
 
+
   final List<Widget> _screens = [
     FeedScreen(),
     DiaryScreen(),
@@ -24,7 +25,6 @@ class _HomePageState extends State<HomePage> {
     ProfilePage(),
   ];
 
-  void _onTabSelected(int index) => setState(() => _currentIndex = index);
 
   @override
   Widget build(BuildContext context) {

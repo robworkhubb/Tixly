@@ -29,7 +29,7 @@ class Memory {
   factory Memory.fromMap(Map<String, dynamic> data, String docId) {
     return Memory(
       id: docId,
-      eventId: data['eventId'].toString() ?? '',
+      eventId: data['eventId'].toString(),
       userId: data['userId']?.toString() ?? '',
       title: data['title']?.toString() ?? 'Senza titolo',
       artist: data['artist']?.toString() ?? 'Artista sconosciuto',
