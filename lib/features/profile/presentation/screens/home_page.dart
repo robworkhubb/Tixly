@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tixly/features/memories/presentation/screens/diary_screen.dart';
 import 'package:tixly/features/feed/presentation/screens/feed_screen.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:tixly/features/profile/presentation/screens/profile_page.dart';
+import 'package:tixly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:tixly/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:tixly/features/feed/presentation/widgets/create_post_sheet.dart';
 
@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     DiaryScreen(),
     SizedBox(),
     WalletScreen(),
-    ProfilePage(),
+    ProfileScreen(),
   ];
 
 

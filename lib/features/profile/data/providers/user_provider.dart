@@ -65,6 +65,17 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<void> refreshProfile(String uid) async {
+    final snap = await _db.collection('users').doc(uid).get();
+    final data = snap.data();
+    // estrai il campo profileImageUrl dal map
+    final String? url = data?['profileImageUrl'] as String?;
+
+    // aggiorna la cache con il nuovo valore
+    _cache[uid] = _cache[uid]!.copyWith(profileImageUrl: url);
+    notifyListeners();
+  }
+
   void clearUser() {
     _user = null;
     notifyListeners();

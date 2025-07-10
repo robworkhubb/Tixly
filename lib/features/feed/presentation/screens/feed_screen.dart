@@ -21,8 +21,11 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     // Carica la prima pagina
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final postProv = context.watch<PostProvider>();
+      final postProv = context.read<PostProvider>();
       await postProv.fetchPosts(clear: true);
+      final uid = context.watch<UserProvider>().user?.uid;
+      final userProv = context.read<UserProvider>();
+      await userProv.refreshProfile(uid!);
 
       final commentProv = context.read<CommentProvider>();
       for (final p in postProv.posts) {
@@ -53,9 +56,11 @@ class _FeedScreenState extends State<FeedScreen> {
     super.dispose();
   }
 
-  Future<void> _onRefresh() {
+  Future<void> _onRefresh() async {
     // Ricarica tutto da capo
-    return context.read<PostProvider>().fetchPosts(clear: true);
+    final uid = context.watch<UserProvider>().user?.uid;
+    await context.read<PostProvider>().fetchPosts(clear: true);
+    await context.read<UserProvider>().refreshProfile(uid!);
   }
 
   @override

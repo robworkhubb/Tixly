@@ -1,4 +1,3 @@
-// lib/widgets/post_card.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,6 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final userProv = context.watch<UserProvider>();
-
 
     // Se non abbiamo ancora caricato il profilo dell'autore, chiamalo:
     if (!userProv.cache.containsKey(widget.post.userId)) {
@@ -65,7 +63,9 @@ class _PostCardState extends State<PostCard> {
                     backgroundImage: authorImage != null
                         ? NetworkImage(authorImage)
                         : null,
-                    child: authorImage == null ? Text(authorName[0]) : null,
+                    child: authorImage == null
+                        ? Text(author?.displayName[0] ?? '?')
+                        : null,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -151,11 +151,14 @@ class _PostCardState extends State<PostCard> {
                   ),
                   const SizedBox(width: 4),
                   StreamBuilder(
-                      stream: commentsStream,
-                      builder: (ctx, snap) {
-                        final count = snap.hasData ? snap.data!.docs.length : '0';
-                        return Text(count.toString(), style: TextStyle(fontSize: 15));
-                      }
+                    stream: commentsStream,
+                    builder: (ctx, snap) {
+                      final count = snap.hasData ? snap.data!.docs.length : '0';
+                      return Text(
+                        count.toString(),
+                        style: TextStyle(fontSize: 15),
+                      );
+                    },
                   ),
 
                   const Spacer(),

@@ -2,14 +2,12 @@
     package="com.tixly.app">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
 
     <application
-        android:label="tixly"
+        android:label="Tixly"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.tixly.app.tixly.MainActivity"
+            android:name="com.tixly.app.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""

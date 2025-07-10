@@ -14,6 +14,8 @@ import 'features/feed/data/providers/post_provider.dart';
 import 'features/wallet/data/providers/event_provider.dart';
 import 'features/memories/data/providers/memory_provider.dart';
 import 'features/wallet/data/providers/wallet_provider.dart';
+import 'features/profile/data/providers/profile_provider.dart';
+import 'features/profile/data/services/profile_service.dart';
 
 // SCREENS
 import 'features/auth/presentation/screens/login_page.dart';
@@ -102,16 +104,24 @@ class _TixlyAppState extends State<TixlyApp> {
         ChangeNotifierProvider(create: (_) => MemoryProvider()),
         ChangeNotifierProvider(create: (_) => EventProvider()),
         ChangeNotifierProvider(create: (_) => PostProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: Consumer<app.AuthProvider>(
         builder: (context, auth, _) {
           final user = auth.firebaseUser;
-          if (user != null) {
-            context.read<UserProvider>().loadUser(user.uid);
-          } else {
-            context.read<UserProvider>().clearUser();
-          }
+
+          // Evita side-effect durante il build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final userProv = context.read<UserProvider>();
+            if (user != null) {
+              userProv.loadUser(user.uid);    // ✅ ora è sicuro
+            } else {
+              userProv.clearUser();           // ✅ ora è sicuro
+            }
+          });
+
           debugPrint('rebuild material: $user');
+
           return MaterialApp(
             title: 'Tixly',
             theme: ThemeData(
@@ -120,16 +130,15 @@ class _TixlyAppState extends State<TixlyApp> {
               useMaterial3: true,
             ),
             key: ValueKey(user == null ? 'login' : 'home'),
-
             home: _onBoardingSeen
                 ? (user == null ? const LoginPage() : const HomePage())
                 : OnboardingScreen(
-                    onFinish: () {
-                      setState(() {
-                        _onBoardingSeen = true;
-                      });
-                    },
-                  ),
+              onFinish: () {
+                setState(() {
+                  _onBoardingSeen = true;
+                });
+              },
+            ),
           );
         },
       ),

@@ -1,4 +1,4 @@
-package com.tixly.app.tixly
+package com.tixly.app
 
 import io.flutter.embedding.android.FlutterActivity
 
