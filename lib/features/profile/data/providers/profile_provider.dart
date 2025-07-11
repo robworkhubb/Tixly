@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
-import 'package:tixly/features/profile/data/models/user_model.dart';
-import 'package:tixly/features/profile/data/services/profile_service.dart';
+import '../models/user_model.dart';
+import '../services/profile_service.dart';
 
 class ProfileProvider with ChangeNotifier {
   final fb_auth.FirebaseAuth _auth;
@@ -24,8 +24,8 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
 
     final uid = _auth.currentUser!.uid;
-    _user = await _service.fetchProfile(uid);
-
+    final snap = await _service.fetchProfile(uid);
+    _user = snap;  // User.fromMap usa già i default
     _loading = false;
     notifyListeners();
   }
@@ -33,23 +33,27 @@ class ProfileProvider with ChangeNotifier {
   Future<void> setDisplayName(String name) async {
     final uid = _auth.currentUser!.uid;
     await _service.updateDisplayName(uid, name);
-    // ricarico in memoria
     _user = _user!.copyWith(displayName: name);
     notifyListeners();
   }
 
   Future<void> setAvatar(File file) async {
     final uid = _auth.currentUser!.uid;
+
+    // uploadAvatar ora ritorna il String
     final url = await _service.uploadAvatar(uid, file);
-    // aggiorno in Firestore e in memoria
+
+    // aggiornalo anche in memoria
     _user = _user!.copyWith(profileImageUrl: url);
     notifyListeners();
   }
 
+  // …
+
   Future<void> toggleDarkMode(bool on) async {
     final uid = _auth.currentUser!.uid;
     await _service.updateDarkMode(uid, on);
-    _user = _user!.copyWith(darkMode: on);  // ← qui uso `on`
+    _user = _user!.copyWith(darkMode: on);
     notifyListeners();
   }
 }

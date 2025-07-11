@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 }
               },
-              child: const Text('Aggiorna nome'),
+              child: const Text('Aggiorna Profilo!'),
             ),
             const Divider(height: 32),
             SwitchListTile(

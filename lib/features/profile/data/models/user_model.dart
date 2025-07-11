@@ -1,13 +1,13 @@
 class User {
   final String uid;
-  String? email;
-  String displayName;
-  String? profileImageUrl;
+  final String? email;
+  final String displayName;
+  final String? profileImageUrl;
   final bool darkMode;
 
   User({
     required this.uid,
-    required this.email,
+    this.email,
     required this.displayName,
     this.profileImageUrl,
     this.darkMode = false,
@@ -15,23 +15,29 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> data, String docId) {
     return User(
-      uid: data['uid'],
-      email: data['email'],
-      displayName: data['displayName'],
-      profileImageUrl: data['profileImageUrl'],
-      darkMode: data['darkMode'] as bool ?? false,
+      uid: docId,
+      email: data['email'] as String?,
+      // se displayName è null -> stringa vuota
+      displayName: (data['displayName'] as String?)?.trim() ?? '',
+      // profileImageUrl può essere null
+      profileImageUrl: data['profileImageUrl'] as String?,
+      // se darkMode è null -> false
+      darkMode: (data['darkMode'] as bool?) ?? false,
     );
   }
 
   Map<String, dynamic> toMap() => {
-      'uid': uid,
-      'email': email,
-      'displayName': displayName,
-      'profileImageUrl': profileImageUrl,
-      'darkMode': darkMode,
+    'email': email,
+    'displayName': displayName,
+    'profileImageUrl': profileImageUrl,
+    'darkMode': darkMode,
   };
 
-  User copyWith({String? displayName, String? profileImageUrl, bool? darkMode}) {
+  User copyWith({
+    String? displayName,
+    String? profileImageUrl,
+    bool? darkMode,
+  }) {
     return User(
       uid: uid,
       email: email,

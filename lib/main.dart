@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -104,7 +106,13 @@ class _TixlyAppState extends State<TixlyApp> {
         ChangeNotifierProvider(create: (_) => MemoryProvider()),
         ChangeNotifierProvider(create: (_) => EventProvider()),
         ChangeNotifierProvider(create: (_) => PostProvider()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (ctx) {
+            final p = ProfileProvider();
+            p.load();          // carica appena possibile
+            return p;
+          },
+        ),
       ],
       child: Consumer<app.AuthProvider>(
         builder: (context, auth, _) {

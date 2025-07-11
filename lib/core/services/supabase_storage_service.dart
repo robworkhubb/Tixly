@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,11 +24,6 @@ class SupabaseStorageService {
         .millisecondsSinceEpoch}.$ext';
 
     // 1️⃣ Upload
-    final res = await _client.storage
-        .from(bucket)
-        .upload(path, file,
-        fileOptions: FileOptions(cacheControl: '3600', upsert: true)
-    );
 
 
     // 2️⃣ Genera la public URL con lo stesso path
